@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css" />
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+
+        <input id="inputs" >
+
+        <button class="equals">=</button>
+        <button> . </button>
+        <button>clear</button>
+
+    </div>
+
+    <script>
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const inputs = document.getElementById("inputs")
+
+
+            const container = document.getElementById("container")
+
+            function add(a, b) {
+                return a+b
+            }
+
+            function subtract(a,b) {
+                return a-b
+            }
+
+            function multiply(a,b) {
+                return a*b
+            }
+
+            function divide(a,b) {
+                return a/b
+            }
+
+
+            const operators = ["*","/","+","-"]
+
+            function operate(operator, num1, num2) {
+                switch (operator) {
+                    case '+':
+                        return add(num1, num2);
+                    case '-':
+                        return subtract(num1, num2);
+                    case '*':
+                        return multiply(num1, num2);
+                    case '/':
+                        return divide(num1, num2);
+                    default:
+                        return "Invalid operator";
+                }
+            }
+
+            for (let i=0; i<=9; i++) {
+                const button = document.createElement("button")
+                button.classList.add("numbers")
+                button.textContent = i
+                button.addEventListener('click', handleInput)
+                container.appendChild(button)
+            }
+
+
+            for (let i=0; i<operators.length; i++) {
+                const button = document.createElement("button")
+                button.classList.add("operators")
+                button.textContent = operators[i]
+                container.appendChild(button)
+                button.addEventListener('click', handleInput)
+            }
+
+            function handleInput(event) {
+                const button = event.target;
+                const inputBar = document.getElementById("inputs");
+
+                // Handle "=" button separately
+                if (button.textContent === "=") {
+                    const expression = inputBar.value;
+                    const values = expression.split(/[+\-*/]/);
+                    const operator = expression.match(/[+\-*/]/);
+                    if (values.length === 2 && operator) {
+                        const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
+                        inputBar.value = result;
+                    }
+                } else {
+                    inputBar.value += button.textContent;
+                    const expression = inputBar.value;
+
+                    // Evaluate the expression after each button click (except for "=")
+                    const values = expression.split(/[+\-*/]/);
+                    const operator = expression.match(/[+\-*/]/);
+                    if (values.length === 2 && operator) {
+                        const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
+                        inputBar.value = result;
+                    }
+                }
+
+                console.log("you clicked me");
+            }
+
+            const equals = document.getElementsByClassName("equals")
+
+            equals.addEventListener('click', handleInput)
+
+            // function calculateResult() {
+            //     const inputBar = document.getElementById("inputs");
+            //     const expression = inputBar.value;
+            //     const values = expression.split(/[+\-*/]/);
+            //     const operator = expression.match(/[+\-*/]/);
+            //     if (values.length === 2 && operator) {
+            //         const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
+            //         inputBar.value = result;
+            //     }
+            // }
+
+    
+        });
+
+        
+    </script>
+    
+</body>
+</html>
