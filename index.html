@@ -9,23 +9,23 @@
 <body>
     <div id="container">
 
-        <input id="inputs" >
+        <input id="inputs"  readonly>
+        <input id="results" readonly >
 
         <button class="equals">=</button>
-        <button> . </button>
-        <button>clear</button>
+        <button class="point"> . </button>
+        <button class="clear">clear</button>
 
     </div>
 
-    <script>
-
-        
+    <script>  
         document.addEventListener('DOMContentLoaded', () => {
 
-            const inputs = document.getElementById("inputs")
-
-
-            const container = document.getElementById("container")
+            const inputs = document.getElementById("inputs");
+            const results = document.getElementById("results");
+            const container = document.getElementById("container");
+            let expression = '';
+            let isResultCalculated = false;
 
             function add(a, b) {
                 return a+b
@@ -39,8 +39,11 @@
                 return a*b
             }
 
-            function divide(a,b) {
-                return a/b
+            function divide(a, b) {
+                if (b === 0) {
+                    throw new Error("Divide by zero error");
+                }
+                return a / b;
             }
 
 
@@ -61,7 +64,7 @@
                 }
             }
 
-            for (let i=0; i<=9; i++) {
+            for (let i=0; i<10; i++) {
                 const button = document.createElement("button")
                 button.classList.add("numbers")
                 button.textContent = i
@@ -80,48 +83,54 @@
 
             function handleInput(event) {
                 const button = event.target;
-                const inputBar = document.getElementById("inputs");
+                const inputBar = inputs;
 
                 // Handle "=" button separately
-                if (button.textContent === "=") {
-                    const expression = inputBar.value;
-                    const values = expression.split(/[+\-*/]/);
-                    const operator = expression.match(/[+\-*/]/);
-                    if (values.length === 2 && operator) {
-                        const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
-                        inputBar.value = result;
+                if (button.classList.contains("equals")) {
+                    if (!isResultCalculated) {
+                        expression = inputs.value;
+                        const values = expression.split(/[+\-*/]/);
+                        const operator = expression.match(/[+\-*/]/);
+                        if (values.length === 2 && operator) {
+                            try {
+                                const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
+                                results.value = `= ${result}`;
+                                inputs.value = result;
+                                expression = result; // Update the expression to the calculated result
+                                isResultCalculated = true;
+                            } catch (error) {
+                                results.value = "= Error";
+                                inputs.value = '';
+                                expression = '';
+                            }
+                        }
                     }
+                } else if (button.classList.contains("clear")) {
+                    inputs.value = '';
+                    results.value = '';
+                    expression = '';
+                    isResultCalculated = false;
                 } else {
-                    inputBar.value += button.textContent;
-                    const expression = inputBar.value;
-
-                    // Evaluate the expression after each button click (except for "=")
-                    const values = expression.split(/[+\-*/]/);
-                    const operator = expression.match(/[+\-*/]/);
-                    if (values.length === 2 && operator) {
-                        const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
-                        inputBar.value = result;
+                    if (isResultCalculated) {
+                        inputs.value = '';
+                        isResultCalculated = false;
                     }
+                    inputs.value += button.textContent;
+                    expression = inputs.value; // Update the entered expression
                 }
-
-                console.log("you clicked me");
             }
 
-            const equals = document.getElementsByClassName("equals")
+            const equals = document.getElementsByClassName("equals")[0]
 
             equals.addEventListener('click', handleInput)
 
-            // function calculateResult() {
-            //     const inputBar = document.getElementById("inputs");
-            //     const expression = inputBar.value;
-            //     const values = expression.split(/[+\-*/]/);
-            //     const operator = expression.match(/[+\-*/]/);
-            //     if (values.length === 2 && operator) {
-            //         const result = operate(operator[0], parseFloat(values[0]), parseFloat(values[1]));
-            //         inputBar.value = result;
-            //     }
-            // }
+            const clear = document.getElementsByClassName("clear")[0]
 
+            clear.addEventListener('click', handleInput)
+
+            const point = document.getElementsByClassName("point")[0]
+
+            point.addEventListener('click', handleInput)
     
         });
 
